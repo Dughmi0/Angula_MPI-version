@@ -37,7 +37,7 @@ To use this version:
 Compile using an MPI-enabled Fortran compiler:
 
 ```bash
-mpif90 -ffixed-line-length-none -std=legacy -fallow-argument-mismatch angula_mpi_optionB.for -o angula_mpi.exe
+mpif90 -ffixed-line-length-none -std=legacy -fallow-argument-mismatch angula_mpi.for -o angula_mpi.exe
 
 
 Note: Compilation may produce warnings due to legacy Fortran structures, but the executable is expected to work correctly.
