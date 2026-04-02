@@ -1,5 +1,5 @@
 c ============================================================
-c  ANGULA - MPI VERSION: OPTION B
+c  ANGULA - MPI VERSION
 c  Parallelization over central molecules (imf loop).
 c  Each MPI rank processes a subset of central molecules
 c  within each configuration. Results are gathered to rank 0
@@ -189,23 +189,24 @@ c ---- Only rank 0 opens the shared log files ----
 
 c ---- Only rank 0 prints the banner ----
       if (myrank .eq. 0) then
-      WRITE(6,*)'*************************************************'
-      WRITE(6,*)'*                                               *'
-      WRITE(6,*)'*      AAAA  N   N  GGGG  U  U L      AAAA      *'
-      WRITE(6,*)'*      A  A  NN  N G      U  U L      A  A      *'
-      WRITE(6,*)'*      AAAA  N N N G  GG  U  U L      AAAA      *'
-      WRITE(6,*)'*      A  A  N  NN G   G  U  U L      A  A      *'
-      WRITE(6,*)'*      A  A  N   N  GGGG  UUUU LLLL   A  A      *'
-      WRITE(6,*)'*                                               *'
-      WRITE(6,*)'*                                               *'
-      WRITE(6,*)'*************************************************'
+      WRITE(6,*)'***********************************************************************************************'
+      WRITE(6,*)'*                                                                                             *'
+      WRITE(6,*)'*      AAAA  N   N  GGGG  U  U L      AAAA 		MMM        MMM    PPPPPPPPP    IIIIII      *'
+      WRITE(6,*)'*      A  A  NN  N G      U  U L      A  A 		M  M      M  M    PP     PP      II        *'
+      WRITE(6,*)'*      AAAA  N N N G  GG  U  U L      AAAA 		M   M   M    M    PPPPPPPPP      II        *'
+      WRITE(6,*)'*      A  A  N  NN G   G  U  U L      A  A 		M    M M     M    PP             II        *'
+      WRITE(6,*)'*      A  A  N   N  GGGG  UUUU LLLL   A  A 		M     M      M    PP           IIIIII      *'
+      WRITE(6,*)'*                                               											   *'
+      WRITE(6,*)'*                                                                                             *'
+      WRITE(6,*)'***********************************************************************************************'
       WRITE(6,*)' '
       WRITE(6,*)''
       WRITE(6,*)'      Dr. Luis Carlos Pardo '
       WRITE(6,*)'      Grup de Caracteritzacio de Materials (UPC) '
       WRITE(6,*)'      for bugs or comments send mail to '
       WRITE(6,*)'      luis.carlos.pardo_upc.edu '
-      WRITE(6,*)''
+      WRITE(6,*)'		
+	  WRITE(6,*)''
       WRITE(6,*)'****************WARNING**********************'
       WRITE(6,*)'Max number of atoms per molecule:  300'
       WRITE(6,*)'Max number of molecules:           30000'
