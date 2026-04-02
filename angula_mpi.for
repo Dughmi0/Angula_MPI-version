@@ -99,7 +99,7 @@ c ****** ENERGY CALCULATION
 	  
 c **************hughe arrays
       integer dimat,dimmol,dimEmix,dimEat
-      parameter (dimat=300,dimmol=30000,dimEmix=4,dimEat=300)
+      parameter (dimat=50,dimmol=20000,dimEmix=4,dimEat=50)
       real r(3,dimat,dimmol)
       character*3 nomat(dimat,dimmol)
       integer molmix(dimmol),natt(dimmol),order(dimmol,200)
