@@ -42,7 +42,12 @@ mpif90 -ffixed-line-length-none -std=legacy -fallow-argument-mismatch angula_mpi
 
 Note: Compilation may produce warnings due to legacy Fortran structures, but the executable is expected to work correctly.
 
+## Run command 
+You can use the following commands to run it:
+'''bash
+mpirun -np 4 angula_mpi.exe
 
+or you can drop -np 4 and mpirun will assign the MPI ranks.
 
 
 ## Configuration Limits
