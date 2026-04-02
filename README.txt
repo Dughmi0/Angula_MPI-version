@@ -18,8 +18,8 @@ This MPI version enables parallel processing of configurations, significantly re
 - the number of available processors
 - the system size
 
-The implementation was tested on an AMD Ryzen 7 processor using 16 MPI processes. OS: Linux Ubuntu 24.04
-Note: It was not tested on other OS windows or mac or other linux distos.
+The implementation was tested on an AMD Ryzen 7 processor using 8 MPI processes. OS: Linux Ubuntu 24.04
+Note: It was not tested on other OS windows or mac or other linux distos, if the original code works on your machine, this most likely will work too.
 ---
 
 ## Integration with ANGULA
@@ -47,7 +47,7 @@ You can use the following commands to run it:
 '''bash
 mpirun -np 4 angula_mpi.exe
 
-or you can drop -np 4 and mpirun will assign the MPI ranks.
+optional you can drop -np 4 and mpirun will assign the MPI ranks.
 
 
 ## Configuration Limits
