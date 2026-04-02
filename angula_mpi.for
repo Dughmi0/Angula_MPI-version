@@ -6,7 +6,7 @@ c  within each configuration. Results are gathered to rank 0
 c  at the end of each configuration via MPI_Gather.
 c  Best when you have few but very large configurations.
 c
-c  Compile:  mpif90 -O2 -o angula_mpiB angula_mpi_optionB.for
+c  Compile:  mpif90 -O2 -o angula_mpiB angula_mpi.for
 c  Run:      mpirun -np 8 ./angula_mpiB control.con
 c ============================================================
 
@@ -218,7 +218,7 @@ c ---- Only rank 0 prints the banner ----
       WRITE(6,*)''
       WRITE(6,*)''
       WRITE(6,*)''
-      WRITE(6,"(a25,i4)")'MPI ranks (Option B):  ',nprocs
+      WRITE(6,"(a25,i4)")'MPI ranks:  ',nprocs
       WRITE(6,*)''
       end if
 
