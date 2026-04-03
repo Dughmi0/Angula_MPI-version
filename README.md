@@ -46,7 +46,7 @@ Note: Compilation may produce warnings due to legacy Fortran structures, but the
 You can use the following commands to run it:
 '''bash
 mpirun -np 4 angula_mpi.exe
-```
+'''
 optional you can drop -np 4 and mpirun will assign the MPI ranks.
 
 
