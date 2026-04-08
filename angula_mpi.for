@@ -1,5 +1,5 @@
 c ============================================================
-c  ANGULA - MPI VERSION: OPTION B
+c  ANGULA - MPI VERSION
 c  Parallelization over central molecules (imf loop).
 c  Each MPI rank processes a subset of central molecules
 c  within each configuration. Results are gathered to rank 0
@@ -211,11 +211,11 @@ c ---- Only rank 0 prints the banner ----
       WRITE(6,*)'      luis.carlos.pardo_upc.edu '
       WRITE(6,*)''
       WRITE(6,*)'****************WARNING**********************'
-      WRITE(6,*)'Max number of atoms per molecule:  300'
-      WRITE(6,*)'Max number of molecules:           30000'
+      WRITE(6,*)'Max number of atoms per molecule:  100'
+      WRITE(6,*)'Max number of molecules:           20000'
       WRITE(6,*)'****************WARNING**********************'
       WRITE(6,*)'Max number of species Energy calc: 4'
-      WRITE(6,*)'Max number of atoms Energy calc:   300'
+      WRITE(6,*)'Max number of atoms Energy calc:   100'
       WRITE(6,*)'(To change this contact me, or change the code)'
       WRITE(6,*)'*********************************************'
       WRITE(6,*)''
