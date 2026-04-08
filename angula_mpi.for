@@ -1,12 +1,12 @@
 c ============================================================
-c  ANGULA - MPI VERSION
+c  ANGULA - MPI VERSION: OPTION B
 c  Parallelization over central molecules (imf loop).
 c  Each MPI rank processes a subset of central molecules
 c  within each configuration. Results are gathered to rank 0
 c  at the end of each configuration via MPI_Gather.
 c  Best when you have few but very large configurations.
 c
-c  Compile:  mpif90 -O2 -o angula_mpiB angula_mpi.for
+c  Compile:  mpif90 -O2 -o angula_mpiB angula_mpi_optionB.for
 c  Run:      mpirun -np 8 ./angula_mpiB control.con
 c ============================================================
 
@@ -99,7 +99,7 @@ c ****** ENERGY CALCULATION
 	  
 c **************hughe arrays
       integer dimat,dimmol,dimEmix,dimEat
-      parameter (dimat=50,dimmol=20000,dimEmix=4,dimEat=50)
+      parameter (dimat=300,dimmol=30000,dimEmix=4,dimEat=300)
       real r(3,dimat,dimmol)
       character*3 nomat(dimat,dimmol)
       integer molmix(dimmol),natt(dimmol),order(dimmol,200)
@@ -116,11 +116,13 @@ c  We pack them as reals: im_r, jm_r, dc, dist(:), scalar(:), angbiv(:)
 c  maxline = 2 + 1 + 100 + 100 + 100 = 303 — use 400 for safety.
       integer, parameter :: MAXLINE=400
       integer, parameter :: MAXPAIRS=500000  ! max pairs per rank per conf
-      real    outbuf_local(MAXLINE,MAXPAIRS)  ! local pair lines
+      real,   allocatable :: outbuf_local(:,:)   ! local pair lines
       integer npairs_local                    ! # lines written by this rank
-      real,   allocatable :: outbuf_all(:,:,:) ! (MAXLINE,MAXPAIRS,nprocs)
-      integer, allocatable :: npairs_all(:)    ! lines per rank
+      real,   allocatable :: outbuf_recv(:)   ! gathered packed buffer on root
+      integer, allocatable :: npairs_all(:)   ! lines per rank
+      integer, allocatable :: recvcounts(:), displs(:)
       integer iline, ipair, irank, nline
+      integer sendcount, totalrecv, idx0
 c ---------------------------
 
 c ============================================================
@@ -130,8 +132,10 @@ c ============================================================
       call MPI_Comm_rank(MPI_COMM_WORLD, myrank, ierr)
       call MPI_Comm_size(MPI_COMM_WORLD, nprocs, ierr)
 
+      allocate(outbuf_local(MAXLINE,MAXPAIRS))
       allocate(npairs_all(0:nprocs-1))
-      allocate(outbuf_all(MAXLINE,MAXPAIRS,0:nprocs-1))
+      allocate(recvcounts(0:nprocs-1))
+      allocate(displs(0:nprocs-1))
 
 c ---- Only rank 0 opens the shared log files ----
       if (myrank .eq. 0) then
@@ -189,40 +193,35 @@ c ---- Only rank 0 opens the shared log files ----
 
 c ---- Only rank 0 prints the banner ----
       if (myrank .eq. 0) then
-      WRITE(6,*)'***********************************************************************************************'
-      WRITE(6,*)'*                                                                                             *'
-      WRITE(6,*)'*      AAAA   N   N   GGGG   U  U  L       AAAA 		MMM        MMM    PPPPPPPPP    IIIIII  *'
-      WRITE(6,*)'*      A  A   NN  N  G       U  U  L       A  A 		M  M      M  M    PP     PP      II    *'
-      WRITE(6,*)'*      AAAA   N N N  G  GG   U  U  L       AAAA 		M   M   M    M    PPPPPPPPP      II    *'
-      WRITE(6,*)'*      A  A   N  NN  G   G   U  U  L       A  A 		M    M M     M    PP             II    *'
-      WRITE(6,*)'*      A  A   N   N   GGGG   UUUU  LLLL    A  A 		M     M      M    PP           IIIIII  *'
-      WRITE(6,*)'*                                               											   *'
-      WRITE(6,*)'*       ANGULA MPI Version                                                                    *'
-      WRITE(6,*)'***********************************************************************************************'
+      WRITE(6,*)'*************************************************'
+      WRITE(6,*)'*                                               *'
+      WRITE(6,*)'*      AAAA  N   N  GGGG  U  U L      AAAA      *'
+      WRITE(6,*)'*      A  A  NN  N G      U  U L      A  A      *'
+      WRITE(6,*)'*      AAAA  N N N G  GG  U  U L      AAAA      *'
+      WRITE(6,*)'*      A  A  N  NN G   G  U  U L      A  A      *'
+      WRITE(6,*)'*      A  A  N   N  GGGG  UUUU LLLL   A  A      *'
+      WRITE(6,*)'*                                               *'
+      WRITE(6,*)'*                                               *'
+      WRITE(6,*)'*************************************************'
       WRITE(6,*)' '
       WRITE(6,*)''
       WRITE(6,*)'      Dr. Luis Carlos Pardo '
       WRITE(6,*)'      Grup de Caracteritzacio de Materials (UPC) '
       WRITE(6,*)'      for bugs or comments send mail to '
       WRITE(6,*)'      luis.carlos.pardo_upc.edu '
-      WRITE(6,*)'
-	  WRITE(6,*)'
-	  WRITE(6,*)'
-	  WRITE(6,*)'		MPI extension by: '
-      WRITE(6,*)'       Rashed M. R. Aldughmi '
-	  WRITE(6,*)''
+      WRITE(6,*)''
       WRITE(6,*)'****************WARNING**********************'
-      WRITE(6,*)'Max number of atoms per molecule:  100'
-      WRITE(6,*)'Max number of molecules:           10000'
+      WRITE(6,*)'Max number of atoms per molecule:  300'
+      WRITE(6,*)'Max number of molecules:           30000'
       WRITE(6,*)'****************WARNING**********************'
       WRITE(6,*)'Max number of species Energy calc: 4'
-      WRITE(6,*)'Max number of atoms Energy calc:   100'
+      WRITE(6,*)'Max number of atoms Energy calc:   300'
       WRITE(6,*)'(To change this contact me, or change the code)'
       WRITE(6,*)'*********************************************'
       WRITE(6,*)''
       WRITE(6,*)''
       WRITE(6,*)''
-      WRITE(6,"(a25,i4)")'MPI ranks:  ',nprocs
+      WRITE(6,"(a25,i4)")'MPI ranks (Option B):  ',nprocs
       WRITE(6,*)''
       end if
 
@@ -833,7 +832,6 @@ c ============================================================
 c ---- Reset local pair buffer for this configuration ----
       nadmin_local=0
       npairs_local=0
-      outbuf_local=0.0
 
       nmi=nm
       nmj=nm
@@ -1278,10 +1276,25 @@ c --- Gather number of pairs each rank found ---
      &                npairs_all,  1, MPI_INTEGER,
      &                0, MPI_COMM_WORLD, ierr)
 
-c --- Gather the actual output buffers ---
-      call MPI_Gather(outbuf_local,  MAXLINE*MAXPAIRS, MPI_REAL,
-     &                outbuf_all,    MAXLINE*MAXPAIRS, MPI_REAL,
-     &                0, MPI_COMM_WORLD, ierr)
+c --- Gather only the used part of the output buffers ---
+      sendcount=MAXLINE*npairs_local
+      if (myrank .eq. 0) then
+       displs(0)=0
+       totalrecv=0
+       do irank=0,nprocs-1
+        recvcounts(irank)=MAXLINE*npairs_all(irank)
+        if (irank.gt.0) displs(irank)=displs(irank-1)+recvcounts(irank-1)
+        totalrecv=totalrecv+recvcounts(irank)
+       end do
+       if (totalrecv.gt.0) then
+        allocate(outbuf_recv(totalrecv))
+       else
+        allocate(outbuf_recv(1))
+       end if
+      end if
+      call MPI_Gatherv(outbuf_local, sendcount, MPI_REAL,
+     &                 outbuf_recv, recvcounts, displs, MPI_REAL,
+     &                 0, MPI_COMM_WORLD, ierr)
 
 c --- Gather nadmin for nmolvec accumulation ---
       call MPI_Reduce(nadmin_local, nadmin_global, 1,
@@ -1291,24 +1304,25 @@ c --- Rank 0 writes all collected pairs for this configuration ---
       if (myrank .eq. 0) then
        do irank=0,nprocs-1
         do ipair=1,npairs_all(irank)
-         nline=3+numd+numscal  ! im,jm,dc + distances + scalars
-         im=int(outbuf_all(1,ipair,irank))
-         jm=int(outbuf_all(2,ipair,irank))
-         dc=outbuf_all(3,ipair,irank)
+         idx0=displs(irank)+(ipair-1)*MAXLINE
+         im=int(outbuf_recv(idx0+1))
+         jm=int(outbuf_recv(idx0+2))
+         dc=outbuf_recv(idx0+3)
          do ii=1,numd
-          dist(ii)=outbuf_all(3+ii,ipair,irank)
+          dist(ii)=outbuf_recv(idx0+3+ii)
          end do
          do ii=1,numscal
-          scalar(ii)=outbuf_all(3+numd+ii,ipair,irank)
+          scalar(ii)=outbuf_recv(idx0+3+numd+ii)
          end do
          do ii=1,ntotang
-          angbiv(ii)=outbuf_all(3+numd+numscal+ii,ipair,irank)
+          angbiv(ii)=outbuf_recv(idx0+3+numd+numscal+ii)
          end do
          write(9,"(2i12,100f12.6)") 
      &       im,jm,dc,dist(1:numd),scalar(1:numscal),angbiv(1:ntotang)
         end do
        end do
        nmolvec=2*float(nadmin_global)/float(nm)+nmolvec
+       deallocate(outbuf_recv)
       end if
 
 c --- Synchronise all ranks before next configuration ---
@@ -1368,8 +1382,10 @@ c ============================================================
 
 999   continue
 
+      deallocate(outbuf_local)
       deallocate(npairs_all)
-      deallocate(outbuf_all)
+      deallocate(recvcounts)
+      deallocate(displs)
 
 c ============================================================
 c  MPI FINALISATION
