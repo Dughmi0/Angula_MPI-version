@@ -193,16 +193,22 @@ c ---- Only rank 0 opens the shared log files ----
 
 c ---- Only rank 0 prints the banner ----
       if (myrank .eq. 0) then
-      WRITE(6,*)'***********************************************************************************************'
-      WRITE(6,*)'*      AAAA   N   N   GGGG   U  U  L       AAAAA 		MMM        MMM    PPPPPPPPP    IIIIII  *'
-      WRITE(6,*)'*      A  A   NN  N  G       U  U  L       A   A 		M  M      M  M    PP     PP      II    *'
-      WRITE(6,*)'*      AAAA   N N N  G  GG   U  U  L       AAAAA 		M   M   M    M    PPPPPPPPP      II    *'
-      WRITE(6,*)'*      A  A   N  NN  G   G   U  U  L       A   A 		M    M M     M    PP             II    *'
-      WRITE(6,*)'*      A  A   N   N   GGGG   UUUU  LLLL    A   A 		M     M      M    PP           IIIIII  *'
-      WRITE(6,*)'*                                               											   *'
-      WRITE(6,*)'*                                                                                             *'
-      WRITE(6,*)'*       ANGULA MPI Version                                                                    *'
-      WRITE(6,*)'***********************************************************************************************'
+      WRITE(6,*)'********************************************************'
+      WRITE(6,*)'*      AAAA    N   N    GGGG    U  U   L       AAAAA	*'
+      WRITE(6,*)'*      A  A    NN  N   G        U  U   L       A   A	*'
+      WRITE(6,*)'*      AAAA    N N N   G  GG    U  U   L       AAAAA	*'
+      WRITE(6,*)'*      A  A    N  NN   G   G    U  U   L       A   A	*'
+      WRITE(6,*)'*      A  A    N   N    GGGG    UUUU   LLLL    A   A	*'
+      WRITE(6,*)'*                                                      *'
+      WRITE(6,*)'*                                                      *'	  
+      WRITE(6,*)'*                                                      *'
+	  WRITE(6,*)'*            MM       MM    PPPPP    IIIIII            *'
+      WRITE(6,*)'*            M M     M M    P   P      II              *' 
+      WRITE(6,*)'*            M  M   M  M    PPPPP      II              *'
+	  WRITE(6,*)'*            M   M M   M    P          II              *'
+	  WRITE(6,*)'*            M    M    M    P        IIIIII            *'
+	  WRITE(6,*)'*                                                      *'
+      WRITE(6,*)'********************************************************'
       WRITE(6,*)' '
       WRITE(6,*)''
       WRITE(6,*)'      Dr. Luis Carlos Pardo '
@@ -210,10 +216,8 @@ c ---- Only rank 0 prints the banner ----
       WRITE(6,*)'      for bugs or comments send mail to '
       WRITE(6,*)'      luis.carlos.pardo_upc.edu '
       WRITE(6,*)''		
-      WRITE(6,*)''
 	  WRITE(6,*)''
-	  WRITE(6,*)''
-	  WRITE(6,*)'		MPI extension by: '
+	  WRITE(6,*)'       MPI extension by: '
       WRITE(6,*)'       Rashed M. R. Aldughmi '
 	  WRITE(6,*)''
       WRITE(6,*)'****************WARNING**********************'
@@ -227,8 +231,8 @@ c ---- Only rank 0 prints the banner ----
       WRITE(6,*)''
       WRITE(6,*)''
       WRITE(6,*)''
-      WRITE(6,"(a25,i4)")'MPI ranks (Option B):  ',nprocs
-      WRITE(6,*)''
+      WRITE(6,"(a25,i4)")'MPI ranks :  ',nprocs
+      WRITE(6,*)'change this using:   mpirun -np (number of ranks) angula_mpi.exe'
       end if
 
 111   continue
