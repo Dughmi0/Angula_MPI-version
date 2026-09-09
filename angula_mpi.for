@@ -893,21 +893,7 @@ c ============================================================
         else if(fixmol.eq.3) then
          do i=1,nmolimolj
           if(im.eq.molimolj(1,i).and.jm.eq.molimolj(2,i)) then
-           xc1=r(1,icm,im)
-           yc1=r(2,icm,im)
-           zc1=r(3,icm,im)
-           xc2=r(1,jcm,jm)
-           yc2=r(2,jcm,jm)
-           zc2=r(3,jcm,jm)
-           xcc=(xc2-xc1)
-           ycc=(yc2-yc1)
-           zcc=(zc2-zc1)
-           xcc=xcc-box(1)*nint(xcc/box(1))
-           ycc=ycc-box(2)*nint(ycc/box(2))
-           zcc=zcc-box(3)*nint(zcc/box(3))
-           dc=sqrt(xcc**2+ycc**2+zcc**2)
-           calculate=1
-           goto 11
+          goto 99
           end if
          end do
          goto 50
